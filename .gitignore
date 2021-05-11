@@ -1,4 +1,5 @@
 _build
+gui-haskell-app
 dist
 dist-*
 cabal-dev
