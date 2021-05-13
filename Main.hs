@@ -12,6 +12,9 @@ import Text.Read (readMaybe)
 import Text.Printf (printf)
 import Control.Monad (unless)
 import UtilsAES
+import UtilsCipherBlockECB
+import UtilsCipherBlockCTR
+import UtilsCipherBlockCBC
 import           Crypto.Cipher.AES (AES256)
 
 import qualified GI.Gtk as Gtk
@@ -51,8 +54,8 @@ appActivate app = do
     do 
       msg <- Gtk.entryGetText message
       let msgBytes = pack (Text.unpack (msg))
-      eMsg <- utilsEncrypt msgBytes secretKey mInitIV
-      dMsg <- utilsDecrypt eMsg secretKey mInitIV
+      eMsg <- utilsEncryptCBC msgBytes secretKey mInitIV
+      dMsg <- utilsDecryptCBC eMsg secretKey mInitIV
       Gtk.entrySetText eMessage (Text.pack (unpack eMsg))
       Gtk.entrySetText dMessage (Text.pack (unpack dMsg))
       printf "Bazowa wiadomosc: %s\n" (unpack msgBytes)
