@@ -43,8 +43,8 @@ utilsEncryptECB msg secretKey = do
 
 utilsDecryptECB :: ByteString -> Key AES256 ByteString  -> IO ByteString
 utilsDecryptECB eMsg secretKey = do
-    let paddedMsg = pad (ZERO  blockLength) eMsg
-    let decryptedMsg = decryptECB secretKey paddedMsg
+    let paddedEMsg = pad (ZERO  blockLength) eMsg
+    let decryptedMsg = decryptECB secretKey paddedEMsg
     case decryptedMsg of
       Left err -> error $ show err
       Right dMsg -> do

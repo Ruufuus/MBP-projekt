@@ -37,7 +37,8 @@ utilsEncryptCBC msg secretKey mInitIV = do
   case mInitIV of
     Nothing -> error "Failed to generate and initialization vector."
     Just initIV -> do
-      let encryptedMsg = encryptCBC secretKey initIV msg
+      let paddedMsg = pad (ZERO  blockLength) msg
+      let encryptedMsg = encryptCBC secretKey initIV paddedMsg
       case encryptedMsg of
         Left err -> error $ show err
         Right eMsg -> do
@@ -49,7 +50,8 @@ utilsDecryptCBC eMsg secretKey mInitIV = do
   case mInitIV of
     Nothing -> error "Failed to generate and initialization vector."
     Just initIV -> do
-      let decryptedMsg = decryptCBC secretKey initIV eMsg
+      let paddedEMsg = pad (ZERO  blockLength) eMsg
+      let decryptedMsg = decryptCBC secretKey initIV paddedEMsg
       case decryptedMsg of
         Left err -> error $ show err
         Right dMsg -> do
