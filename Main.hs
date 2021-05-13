@@ -1,16 +1,10 @@
 {-# LANGUAGE MonoLocalBinds, TypeApplications #-}
 
 import Data.Text (Text)
-import Data.Text.Encoding 
 import qualified Data.Text as Text
-import Data.Fixed (Centi)
-import Control.Concurrent (threadDelay, forkIO)
-import System.Random (randomRIO)
 import Data.ByteString.Char8 (pack)
 import Data.ByteString.Char8 (unpack)
-import Text.Read (readMaybe)
 import Text.Printf (printf)
-import Control.Monad (unless)
 import UtilsAES
 import UtilsCipherBlockECB
 import UtilsCipherBlockCTR
@@ -19,7 +13,6 @@ import           Crypto.Cipher.AES (AES256)
 
 import qualified GI.Gtk as Gtk
 import qualified GI.Gio as Gio
-import qualified GI.GLib as GLib
 
 main :: IO ()
 main = do
@@ -29,7 +22,7 @@ main = do
   return ()
 
 appId :: Text
-appId = Text.pack "io.serokell.gui-haskell-app"
+appId = Text.pack "io.szyfry-blokowe-app"
 
 appActivate :: Gtk.Application -> IO ()
 appActivate app = do
@@ -43,14 +36,28 @@ appActivate app = do
   Gtk.setWidgetMargin vbox 10
   Gtk.containerAdd window vbox
   Gtk.widgetShow vbox
+
   message <- addEntry (Text.pack "Wiadomosc") vbox
   eMessage <- addEntry (Text.pack "Szyfrogram") vbox
   dMessage <- addEntry (Text.pack "Odszyfrowana wiadomosc") vbox
-  button <- Gtk.buttonNew
-  Gtk.setButtonLabel button (Text.pack "Zaszyfruj wiadomosc")
-  Gtk.setWidgetHalign button Gtk.AlignCenter
-  Gtk.containerAdd vbox button
-  _ <- Gtk.onButtonClicked button $
+
+  buttonCTR <- Gtk.buttonNew
+  buttonECB <- Gtk.buttonNew
+  buttonCBC <- Gtk.buttonNew
+
+  Gtk.setButtonLabel buttonCTR (Text.pack "[CTR] Zaszyfruj wiadomosc")
+  Gtk.setButtonLabel buttonECB (Text.pack "[ECB] Zaszyfruj wiadomosc")
+  Gtk.setButtonLabel buttonCBC (Text.pack "[CBC] Zaszyfruj wiadomosc")
+
+  Gtk.setWidgetHalign buttonCTR Gtk.AlignCenter
+  Gtk.setWidgetHalign buttonECB Gtk.AlignCenter
+  Gtk.setWidgetHalign buttonCBC Gtk.AlignCenter
+
+  Gtk.containerAdd vbox buttonCBC
+  Gtk.containerAdd vbox buttonECB
+  Gtk.containerAdd vbox buttonCTR
+
+  _ <- Gtk.onButtonClicked buttonCBC $
     do 
       msg <- Gtk.entryGetText message
       let msgBytes = pack (Text.unpack (msg))
@@ -59,10 +66,36 @@ appActivate app = do
       Gtk.entrySetText eMessage (Text.pack (unpack eMsg))
       Gtk.entrySetText dMessage (Text.pack (unpack dMsg))
       printf "Bazowa wiadomosc: %s\n" (unpack msgBytes)
-      printf "Zaszyfrowana wiadomosc: %s\n" (unpack eMsg)
-      printf "Odszyfrowana wiadomosc: %s\n" (unpack dMsg)
+      printf "[CBC]\tZaszyfrowana wiadomosc: %s\n" (unpack eMsg)
+      printf "[CBC]\tOdszyfrowana wiadomosc: %s\n" (unpack dMsg)
 
-  Gtk.widgetShow button
+  _ <- Gtk.onButtonClicked buttonECB $
+    do 
+      msg <- Gtk.entryGetText message
+      let msgBytes = pack (Text.unpack (msg))
+      eMsg <- utilsEncryptECB msgBytes secretKey 
+      dMsg <- utilsDecryptECB eMsg secretKey 
+      Gtk.entrySetText eMessage (Text.pack (unpack eMsg))
+      Gtk.entrySetText dMessage (Text.pack (unpack dMsg))
+      printf "Bazowa wiadomosc: %s\n" (unpack msgBytes)
+      printf "[ECB]\tZaszyfrowana wiadomosc: %s\n" (unpack eMsg)
+      printf "[ECB]\tOdszyfrowana wiadomosc: %s\n" (unpack dMsg) 
+
+  _ <- Gtk.onButtonClicked buttonCTR $
+    do 
+      msg <- Gtk.entryGetText message
+      let msgBytes = pack (Text.unpack (msg))
+      eMsg <- utilsEncryptCTR msgBytes secretKey mInitIV
+      dMsg <- utilsDecryptCTR eMsg secretKey mInitIV
+      Gtk.entrySetText eMessage (Text.pack (unpack eMsg))
+      Gtk.entrySetText dMessage (Text.pack (unpack dMsg))
+      printf "Bazowa wiadomosc: %s\n" (unpack msgBytes)
+      printf "[CTR]\tZaszyfrowana wiadomosc: %s\n" (unpack eMsg)
+      printf "[CTR]\tOdszyfrowana wiadomosc: %s\n" (unpack dMsg)
+
+  Gtk.widgetShow buttonECB
+  Gtk.widgetShow buttonCTR
+  Gtk.widgetShow buttonCBC
   Gtk.widgetShow window
 
 
