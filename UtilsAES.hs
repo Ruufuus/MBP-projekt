@@ -30,13 +30,13 @@ blockLength :: Int
 blockLength = 16
 
 -- | Generates a string of bytes (key) of a specific length for a given block cipher
-genSecretKey :: forall m c a. (CRT.MonadRandom m, BlockCipher c, ByteArray a) => c -> Int -> m (Key c a)
+genSecretKey :: (CRT.MonadRandom m, BlockCipher c, ByteArray a) => c -> Int -> m (Key c a)
 genSecretKey _ = fmap Key . CRT.getRandomBytes
 
 -- | Generate a random initialization vector for a given block cipher
-genRandomIV :: forall m c. (CRT.MonadRandom m, BlockCipher c) => c -> m (Maybe (IV c))
+genRandomIV :: (CRT.MonadRandom m, BlockCipher c) => c -> m (Maybe (IV c))
 genRandomIV _ = do
-  bytes :: ByteString <- CRT.getRandomBytes $ blockSize (undefined :: c)
+  bytes :: ByteString <- CRT.getRandomBytes $ blockLength
   return $ makeIV bytes
 
 -- | Initialize a block cipher

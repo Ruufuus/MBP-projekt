@@ -30,7 +30,7 @@ decryptCTR = encryptCTR
 
 
 
-utilsEncryptCTR :: ByteString -> Key AES256 ByteString -> Maybe (IV AES256) -> IO ByteString
+utilsEncryptCTR :: (ByteArray b) => b -> Key AES256 b -> Maybe (IV AES256) -> IO b
 utilsEncryptCTR msg secretKey mInitIV = do
   case mInitIV of
     Nothing -> error "Failed to generate and initialization vector."
@@ -42,7 +42,7 @@ utilsEncryptCTR msg secretKey mInitIV = do
           return eMsg
 
 
-utilsDecryptCTR :: ByteString -> Key AES256 ByteString -> Maybe (IV AES256) -> IO ByteString
+utilsDecryptCTR :: (ByteArray b) => b -> Key AES256 b -> Maybe (IV AES256) -> IO b
 utilsDecryptCTR eMsg secretKey mInitIV = do
   case mInitIV of
     Nothing -> error "Failed to generate and initialization vector."

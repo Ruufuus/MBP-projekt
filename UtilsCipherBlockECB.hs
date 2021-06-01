@@ -31,7 +31,7 @@ decryptECB secretKey msg =
     Left e -> Left e
     Right c -> Right $ ecbDecrypt c msg
 
-utilsEncryptECB :: ByteString -> Key AES256 ByteString -> IO ByteString
+utilsEncryptECB :: (ByteArray b) => b -> Key AES256 b -> IO b
 utilsEncryptECB msg secretKey = do
     let paddedMsg = pad (ZERO  blockLength) msg
     let encryptedMsg = encryptECB secretKey paddedMsg
@@ -41,7 +41,7 @@ utilsEncryptECB msg secretKey = do
         return eMsg
 
 
-utilsDecryptECB :: ByteString -> Key AES256 ByteString  -> IO ByteString
+utilsDecryptECB :: (ByteArray b) => b -> Key AES256 b  -> IO b
 utilsDecryptECB eMsg secretKey = do
     let paddedEMsg = pad (ZERO  blockLength) eMsg
     let decryptedMsg = decryptECB secretKey paddedEMsg

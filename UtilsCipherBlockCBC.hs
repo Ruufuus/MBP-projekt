@@ -32,7 +32,7 @@ decryptCBC secretKey initIV msg =
     Right c -> Right $ cbcDecrypt c initIV msg
 
 
-utilsEncryptCBC :: ByteString -> Key AES256 ByteString -> Maybe (IV AES256) -> IO ByteString
+utilsEncryptCBC :: (ByteArray b) => b -> Key AES256 b -> Maybe (IV AES256) -> IO b
 utilsEncryptCBC msg secretKey mInitIV = do
   case mInitIV of
     Nothing -> error "Failed to generate and initialization vector."
@@ -45,7 +45,7 @@ utilsEncryptCBC msg secretKey mInitIV = do
           return eMsg
 
 
-utilsDecryptCBC :: ByteString -> Key AES256 ByteString -> Maybe (IV AES256) -> IO ByteString
+utilsDecryptCBC :: (ByteArray b) => b -> Key AES256 b -> Maybe (IV AES256) -> IO b
 utilsDecryptCBC eMsg secretKey mInitIV = do
   case mInitIV of
     Nothing -> error "Failed to generate and initialization vector."
