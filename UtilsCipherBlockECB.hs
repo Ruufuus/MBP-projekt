@@ -35,8 +35,7 @@ utilsEncryptECB msg secretKey = do
     let encryptedMsg = encryptECB secretKey paddedMsg
     case encryptedMsg of
       Left err -> error $ show err
-      Right eMsg -> do
-        return eMsg
+      Right eMsg -> return eMsg
 
 
 utilsDecryptECB :: (ByteArray b) => b -> Key AES256 b  -> IO b
@@ -45,5 +44,4 @@ utilsDecryptECB eMsg secretKey = do
     let decryptedMsg = decryptECB secretKey paddedEMsg
     case decryptedMsg of
       Left err -> error $ show err
-      Right dMsg -> do
-        return dMsg
+      Right dMsg -> return dMsg

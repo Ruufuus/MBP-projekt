@@ -39,8 +39,7 @@ utilsEncryptCBC msg secretKey mInitIV = do
       let encryptedMsg = encryptCBC secretKey initIV paddedMsg
       case encryptedMsg of
         Left err -> error $ show err
-        Right eMsg -> do
-          return eMsg
+        Right eMsg -> return eMsg
 
 
 utilsDecryptCBC :: (ByteArray b) => b -> Key AES256 b -> Maybe (IV AES256) -> IO b
@@ -52,5 +51,4 @@ utilsDecryptCBC eMsg secretKey mInitIV = do
       let decryptedMsg = decryptCBC secretKey initIV paddedEMsg
       case decryptedMsg of
         Left err -> error $ show err
-        Right dMsg -> do
-          return dMsg
+        Right dMsg -> return dMsg

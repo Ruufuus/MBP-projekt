@@ -34,8 +34,7 @@ utilsEncryptCTR msg secretKey mInitIV = do
       let encryptedMsg = encryptCTR secretKey initIV msg
       case encryptedMsg of
         Left err -> error $ show err
-        Right eMsg -> do
-          return eMsg
+        Right eMsg -> return eMsg
 
 
 utilsDecryptCTR :: (ByteArray b) => b -> Key AES256 b -> Maybe (IV AES256) -> IO b
@@ -46,5 +45,4 @@ utilsDecryptCTR eMsg secretKey mInitIV = do
       let decryptedMsg = decryptCTR secretKey initIV eMsg
       case decryptedMsg of
         Left err -> error $ show err
-        Right dMsg -> do
-          return dMsg
+        Right dMsg -> return dMsg
