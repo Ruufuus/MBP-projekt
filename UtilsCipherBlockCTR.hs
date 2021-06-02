@@ -7,14 +7,10 @@ module UtilsCipherBlockCTR(
     )where
 
 import           Crypto.Cipher.AES (AES256)
-import           Crypto.Cipher.Types (BlockCipher(..), Cipher(..), nullIV, KeySizeSpecifier(..), IV, makeIV)
-import           Crypto.Error (CryptoFailable(..), CryptoError(..))
-
-import Crypto.Data.Padding (pad, unpad, Format(ZERO))
-import qualified Crypto.Random.Types as CRT
+import           Crypto.Cipher.Types (BlockCipher(..), IV)
+import           Crypto.Error ( CryptoError(..))
 
 import           Data.ByteArray (ByteArray)
-import           Data.ByteString (ByteString)
 
 import UtilsAES
 
